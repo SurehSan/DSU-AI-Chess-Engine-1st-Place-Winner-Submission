@@ -146,13 +146,25 @@ def bishop_pos_weight(BISHOP_W, board, color, square):
 
     return bishop_position_points
 
+def is_outposted(board, color, square):
+    file = chess.square_file(square)  # 4 (files are 0-indexed: a=0, ..., h=7)
+    rank = chess.square_rank(square)
+    diagonal1 = file + 1, rank - 1
+    diagonal2 = file - 1, rank - 1
+    
+    if file > 0 and file < 7:
+        if (board.piece_at(diagonal1).piece_type == chess.PAWN and board.piece_at(diagonal1).color == color) and (board.piece_at(diagonal2).piece_type == chess.PAWN and board.piece_at(diagonal2).color == color):
+            for 
+
 def knight_pos_weight(KNIGHT_W, board, color, square):
     knight_position_points = KNIGHT_W
+
     if is_defended(board, square, color):
         knight_position_points += 0.02
     knight_position_points += 0.02 * len(board.attacks(square))
+    #if board.piece_at(
 
-    return knight_position_points
+    return knight_position_points 
 
 def LINKED_POINTS(board, color, LINKED_BONUS):
     for square in chess.SQUARES:
@@ -259,22 +271,20 @@ def get_game_phase(board):
     
      # Maximum phase score is when all pieces are on board
     # 2 knights (2), 2 bishops (2), 2 rooks (4), 1 queen (4) per side = 24 total
-    
-    MIDDLEGAME_THRESHOLD = 20
-    ENDGAME_THRESHOLD = 4
-    
+    MAX_PHASE = 24
+  
     # Current phase score
     phase_weight = 0
-
     for square in chess.SQUARES:
         piece = board.piece_at(square)
         if piece and piece.piece_type != chess.KING:
             phase+= PHASE_WEIGHTS[piece.piece_type]
 
+
     # Convert to a 0-1 scale where:
     # 1.0 = pure middlegame (all pieces present)
     # 0.0 = pure endgame (only kings and pawns)
-    return min(1.0, phase / MAX_PHASE)
+    return min(1.0, phase_weight / MAX_PHASE)
 
 
 #positional knowledge, add more knowledge based on where they are in the board
@@ -289,6 +299,9 @@ def evaluate_board(board):
     Positive score favors white, negative favors black.
     """
     
+    score = 0
+
+
     color = chess.WHITE if board.turn == chess.WHITE else chess.BLACK
 
     #we declare our weights here in order to calculate how optimal each side's position is
@@ -320,12 +333,16 @@ def evaluate_board(board):
     white_king_safety_score = king_safety(chess.board, chess.WHITE)
     black_king_safety_score = king_safety(chess.board, chess.BLACK)
 
+    king_safety_score_total = (white_king_safety_score - black_king_safety_score)
+
+    score += king_safety_score_total * W_king_safety
+
     white_center = count_center_control(chess.board, chess.WHITE, CENTER_UNIT_VALUE)
     black_center = count_center_control(chess.board, chess.BLACK, CENTER_UNIT_VALUE)
 
     center_control_score = (white_center - black_center) * CENTER_UNIT_VALUE * W_center_control
 
-    score += center_control_score
+    score += center_control_score 
 
     if board.can_claim_threefold_repetition():
         if board.turn == chess.WHITE:
@@ -343,18 +360,12 @@ def evaluate_board(board):
     if board.is_stalemate() or board.is_insufficient_material():
         return 0
     
-    score = 0
     for square in chess.SQUARES:
         piece = board.piece_at(square)
         if piece:
             value = BASE_PIECE_VALUES[piece.piece_type]
             score += value if piece.color == chess.WHITE else -value
 
-    white_king_safety = white_safety_score(chess.board, chess.WHITE)
-    black_king_safety = black_safety_score(chess.board, chess.BLACK)
-    king_safety_score_total = (white_king_safety - black_king_safety)
-
-    score += king_safety_score_total
             
     score = score * Total_W
 
