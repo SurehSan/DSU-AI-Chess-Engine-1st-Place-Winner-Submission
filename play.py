@@ -18,14 +18,14 @@ POSITION_TABLES = {
         # 8x8 grid with position values
         # Center pawns are worth more
         # Advancing pawns worth progressively more
-        # TODO: This is currently unused - implement position-based evaluation
+        #This is currently unused - implement position-based evaluation
     ]
 }
 
 
 
 # Piece-square tables for positional evaluation
-# TODO: These tables are defined but NOT YET USED in evaluate_board()
+# These tables are defined but NOT YET USED in evaluate_board()
 # To use them, iterate through pieces and add/subtract the positional bonus based on square
 PIECE_SQUARE_TABLES = {
     'middlegame': {
@@ -106,9 +106,6 @@ PIECE_SQUARE_TABLES = {
     }
 }
 
-#Here, we will add weights based on how much control a piece has, what type of safety each piece is in, etc
-
-
 
 # center control 
 def count_center_control(board, color, CENTER_UNIT_VALUE):
@@ -139,8 +136,11 @@ def is_defended(board, square, color, piece_values=BASE_PIECE_VALUES):
     return False  
 
 def capture(board, color):
-    """Returns a list of available capture moves for the given color.
-    TODO: This function is currently UNUSED - could be used for move ordering in minimax."""
+    """ CHANGED THIS FUNCTION
+    UNUSED - could be used for move ordering in minimax."""
+    
+    #changed this capture function
+    #creates a list of possible capture moves
     captures = []
     for move in board.legal_moves:
         if board.is_capture(move):
@@ -149,7 +149,7 @@ def capture(board, color):
 
 def bishop_pos_weight(BISHOP_W, board, color, square):
     """Calculate positional weight for a bishop.
-    TODO: This function is currently UNUSED - integrate into evaluate_board()."""
+    UNUSED!!!!"""
     bishop_position_points = BISHOP_W
     if is_defended(board, square, color):
         bishop_position_points += 0.02
@@ -158,14 +158,15 @@ def bishop_pos_weight(BISHOP_W, board, color, square):
     return bishop_position_points
 
 def is_outposted(board, color, square):
-    """Check if a piece is outposted (supported by pawns and cannot be easily attacked).
-    TODO: This function is currently UNUSED - could be used in knight/bishop evaluation."""
+    """ CHANGED THIS FUNCTION
+    Check if a piece is outposted (supported by pawns and cannot be easily attacked)
+    UNUSED!!!!"""
     file = chess.square_file(square)
     rank = chess.square_rank(square)
     
     if file > 0 and file < 7:
-        # Check if there are friendly pawns on adjacent diagonals
-        if rank > 0:  # Make sure we're not on the first rank
+        #check if there are friendly pawns on adjacent diagonals
+        if rank > 0:  #make sure we're not on the first rank
             diagonal1_square = chess.square(file + 1, rank - 1)
             diagonal2_square = chess.square(file - 1, rank - 1)
             
@@ -180,7 +181,7 @@ def is_outposted(board, color, square):
 
 def knight_pos_weight(KNIGHT_W, board, color, square):
     """Calculate positional weight for a knight.
-    TODO: This function is currently UNUSED - integrate into evaluate_board()."""
+    UNUSED - integrate into evaluate_board()."""
     knight_position_points = KNIGHT_W
 
     if is_defended(board, square, color):
@@ -191,14 +192,17 @@ def knight_pos_weight(KNIGHT_W, board, color, square):
     return knight_position_points 
 
 def LINKED_POINTS(board, color, LINKED_BONUS):
-    """Calculate bonus for linked/connected pawns."""
-    for square in chess.SQUARES:
+    """ CHANGED THIS FUNCTION!!!
+    Calculate bonus for linked/connected pawns."""
+    for square in chess.SQUARES: 
         piece = board.piece_at(square)
         if piece and piece.piece_type == chess.PAWN and piece.color == color:
-            if board.is_attacked_by(color, square):
+            if board.is_attacked_by(color, square): #defeneded by our own
                 attackers = board.attackers(color, square)
+
                 for attacker_square in attackers:
                     attacker_piece = board.piece_at(attacker_square)
+
                     if attacker_piece and attacker_piece.piece_type == chess.PAWN and attacker_piece.color == color:
                         LINKED_BONUS += 0.01
     return LINKED_BONUS
@@ -207,15 +211,11 @@ def LINKED_POINTS(board, color, LINKED_BONUS):
             
 def pawn_metrics(board, color, PASSED_PAWN_VALUE, DOUBLED_PAWN_PENALTY, ISOLATED_PAWN_PENALTY):
     """Calculate pawn structure metrics."""
-    # Note: Currently only calculates linked pawns. The PASSED_PAWN_VALUE, 
-    # DOUBLED_PAWN_PENALTY, and ISOLATED_PAWN_PENALTY parameters are not used yet.
-    # NEED TO: Implement passed, doubled, and isolated pawn detection
-    
+    #only calculates linked pawns. 
+    #NEED TO: Implement passed, doubled, and isolated pawn detection
     white_pawn_metrics = LINKED_POINTS(board, chess.WHITE, 0)
     black_pawn_metrics = LINKED_POINTS(board, chess.BLACK, 0)
-    
     pawn_structure_score = white_pawn_metrics - black_pawn_metrics
-    
     return pawn_structure_score
 #finds the sum of white's pawn structure based off of the 3 major pawn weights    
      
@@ -255,7 +255,7 @@ def king_safety(board, color):
                         safety_score += 0.15
             else:
                 check_rank = king_rank - 1
-                if check_rank >= 0:  # Fixed: Black pawns need to check rank >= 0, not >= 7
+                if check_rank >= 0:  #FIXED!!! Black pawns need to check rank >= 0, not >= 7
                     check_square = chess.square(check_file, check_rank)
                     piece = board.piece_at(check_square)
                     if piece and piece.piece_type == chess.PAWN and piece.color == color:
@@ -291,7 +291,7 @@ def get_game_phase(board):
     Determines if we're in middlegame or endgame.
     Returns a value between 0 (pure endgame) and 1 (pure middlegame)
     
-    TODO: This function is currently UNUSED - could be used to blend middlegame
+    UNUSED - could be used to blend middlegame
     and endgame piece-square tables or adjust evaluation weights dynamically.
     """
     # Material weights for phase calculation
@@ -364,8 +364,7 @@ def evaluate_board(board):
     ISOLATED_PAWN_PENALTY = 0.15 #penalty for pawn with no friendly pawns on adjacent files - TODO: Not yet used
     LINKED_BONUS = 0.1  # Used in LINKED_POINTS() function
     
-    # Note: Many of these weights are defined but not yet fully implemented in the evaluation
-    # Currently only center_control, king_safety, pawn_structure (linked pawns), and material are used
+    #currently only center_control, king_safety, pawn_structure (linked pawns), and material are used
 
 
     white_pawn_structure_score = pawn_metrics(board, chess.WHITE, PASSED_PAWN_VALUE, DOUBLED_PAWN_PENALTY, ISOLATED_PAWN_PENALTY)
@@ -390,6 +389,9 @@ def evaluate_board(board):
         # If it's Black's turn and checkmate, Black lost (good for White)
         return float('-inf') if board.turn == chess.WHITE else float('inf')
     
+
+    #REMOVED THE 3 FOLD REPEITITON HERE AND MOVED IT DOWN TO FIND BEST MOVE FUNCTION
+
     if board.is_stalemate() or board.is_insufficient_material():
         return 0
     
@@ -401,8 +403,7 @@ def evaluate_board(board):
             value = BASE_PIECE_VALUES[piece.piece_type]
             material_score += value if piece.color == chess.WHITE else -value
 
-    # Combine all evaluation components
-    # Note: W_positional and W_mobility are defined but not yet implemented
+    #combine all evaluation components
     total_score = material_score + score  # score already includes king_safety and center_control weighted
     
     return total_score
@@ -468,7 +469,8 @@ def find_best_move(board, depth):
         best_value = float('-inf')
         for move in board.legal_moves:
             board.push(move)
-            
+             
+            """ADDED CHECK FOR REPETITION HERE!!!!!!!!"""
             #penalize moves that lead to threefold repetition
             if board.is_repetition(2):  #checks if the position has occurred 2+ times (would be 3rd occurrence)
                 board_value = float('-inf')  # Make this move very undesirable
