@@ -27,6 +27,10 @@ Throughout the 2 weeks of the competition, we improved in our soft skills aswell
 
 Additionally, we won FIRST PLACE and recieved a Raspberry Pi 4 kit as a prize, which we are in the process of applying to a computer vision project!
 
+## How to run the bot!
+To run with output in terminal, run python -m compeition_moderator /path/to/white/bot /path/to/black/bot. To run with graphical output, run ./visualize.sh /path/to/white/bot /path/to/black/bot. Note: if running with gui, press f to toggle fullscreen.
+- You can make the bot face against itself, against your own bot, or against the demo bot (simple mini max)
+
 
 
 
