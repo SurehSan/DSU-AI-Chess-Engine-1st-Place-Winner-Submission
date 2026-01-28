@@ -13,6 +13,7 @@ This is a improved version of the minimax algorithm implementation in the form o
 - Order moves (move ordering for optimization)
 - Is defended (determines if a piece is defended)
 - Is outposted (determines if a pawn cannot be attacked)
+- Credits go to Wyatt (https://github.com/TheeErnie) and Burke (https://github.com/synth-mania) for creating the original Chess Competition boilerplate files: https://github.com/DSU-AI-Club/ai-chess-bot
 
 ## Teammates
 The team included Connor Brenner (https://github.com/cnnrbrnnr), Ethan Savage (https://github.com/Ethan-Savage), and Sureh San (https://github.com/SurehSan). 
